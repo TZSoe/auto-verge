@@ -6,6 +6,10 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use App\Events\BookingDone;
+use App\Listeners\SendVerificationMailToCustomer;
+use App\Events\CarIsTakenBack;
+use App\Listeners\SendInvoiceMailToCustomer;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -15,9 +19,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
+        BookingDone::class => [
+            SendVerificationMailToCustomer::class,
         ],
+        CarIsTakenBack::class => [
+            SendInvoiceMailToCustomer::class
+        ]
     ];
 
     /**

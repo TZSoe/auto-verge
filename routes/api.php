@@ -18,5 +18,13 @@ Route::post('user/login', 'Api\Auth\LoginController@login');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     
-    Route::apiResource('users', 'Api\UserController');
+    Route::apiResource('users', 'Api\UserController')->middleware('check-is-admin');
+
+    Route::apiResource('services', 'Api\ServiceController')->middleware('check-is-admin');
+
+    Route::apiResource('customers', 'Api\CustomerController');
+
+    Route::apiResource('bookings', 'Api\BookingController');
+
+    Route::patch('bookings/{booking}/paid', 'Api\BookingController@paid');
 });

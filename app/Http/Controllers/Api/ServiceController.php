@@ -4,23 +4,22 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Interfaces\UserRepositoryInterface;
-use App\Http\Requests\UserStoreRequest;
-use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\ServiceStoreRequest;
+use App\Http\Requests\ServiceUpdateRequest;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\User;
-use App\Http\Resources\UserResource;
-use App\Http\Resources\UserCollection;
+use App\Interfaces\ServiceRepositoryInterface;
+use App\Http\Resources\ServiceResource;
+use App\Http\Resources\ServiceCollection;
 
-class UserController extends Controller
+
+class ServiceController extends Controller
 {
-    private UserRepositoryInterface $userRepository;
+    private ServiceRepositoryInterface $serviceRepository;
 
-    public function __construct(UserRepositoryInterface $userRepository) 
+    public function __construct(ServiceRepositoryInterface $serviceRepository) 
     {
-        $this->userRepository = $userRepository;
+        $this->serviceRepository = $serviceRepository;
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -28,10 +27,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->userRepository->getAllUsers();
+        $services = $this->serviceRepository->getAllServices();
         return response()->json([
             'status' => 'success',
-            'data' => new UserCollection($users)
+            'data' => new ServiceCollection($services)
         ]);
     }
 
@@ -41,16 +40,15 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserStoreRequest $request)
+    public function store(ServiceStoreRequest $request)
     {
-        $userData['username'] = $request->username;
-        $userData['password'] = bcrypt($request->password);
+        $serviceData['type'] = $request->type;
 
-        $user = $this->userRepository->createUser($userData);
+        $service = $this->serviceRepository->createService($serviceData);
 
         return response()->json([
             'status' => 'success',
-            'data' => new UserResource($user)
+            'data' => new ServiceResource($service)
         ], Response::HTTP_CREATED);
     }
 
@@ -62,10 +60,10 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = $this->userRepository->getUserById($id);
+        $service = $this->serviceRepository->getServiceById($id);
         return response()->json([
             'status' => 'success',
-            'data' => new UserResource($user)
+            'data' => new ServiceResource($service)
         ]);
     }
 
@@ -76,22 +74,16 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(ServiceUpdateRequest $request, $id)
     {
-        $userData = [];
+        
+        $serviceData['type'] = $request->type;
 
-        if($request->has('username')){
-            $userData['username'] = $request->username;
-        }
-        if($request->has('password')){
-            $userData['password'] = bcrypt($request->password);
-        }
-
-        $user = $this->userRepository->updateUser($id, $userData);
+        $service = $this->serviceRepository->updateService($id, $serviceData);
 
         return response()->json([
             'status' => 'success',
-            'data' => new UserResource($user)
+            'data' => new ServiceResource($service)
         ]);
     }
 
@@ -103,7 +95,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $this->userRepository->deleteUser($id);
+        $this->serviceRepository->deleteService($id);
         return response()->json([], Response::HTTP_NO_CONTENT);
     }
 }

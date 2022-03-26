@@ -4,21 +4,22 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Interfaces\UserRepositoryInterface;
-use App\Http\Requests\UserStoreRequest;
-use App\Http\Requests\UserUpdateRequest;
+use App\Http\Requests\CustomerStoreRequest;
+use App\Http\Requests\CustomerUpdateRequest;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\User;
-use App\Http\Resources\UserResource;
-use App\Http\Resources\UserCollection;
+use App\Interfaces\CustomerRepositoryInterface;
+use App\Http\Resources\CustomerResource;
+use App\Http\Resources\CustomerCollection;
 
-class UserController extends Controller
+
+
+class CustomerController extends Controller
 {
-    private UserRepositoryInterface $userRepository;
+    private CustomerRepositoryInterface $customerRepository;
 
-    public function __construct(UserRepositoryInterface $userRepository) 
+    public function __construct(CustomerRepositoryInterface $customerRepository) 
     {
-        $this->userRepository = $userRepository;
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -28,10 +29,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->userRepository->getAllUsers();
+        $customers = $this->customerRepository->getAllCustomers();
         return response()->json([
             'status' => 'success',
-            'data' => new UserCollection($users)
+            'data' => new CustomerCollection($customers)
         ]);
     }
 
@@ -41,16 +42,16 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserStoreRequest $request)
+    public function store(CustomerStoreRequest $request)
     {
-        $userData['username'] = $request->username;
-        $userData['password'] = bcrypt($request->password);
+        $customerData['name'] = $request->name;
+        $customerData['email'] = $request->email;
 
-        $user = $this->userRepository->createUser($userData);
+        $customer = $this->customerRepository->createCustomer($customerData);
 
         return response()->json([
             'status' => 'success',
-            'data' => new UserResource($user)
+            'data' => new CustomerResource($customer)
         ], Response::HTTP_CREATED);
     }
 
@@ -62,10 +63,10 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = $this->userRepository->getUserById($id);
+        $customer = $this->customerRepository->getCustomerById($id);
         return response()->json([
             'status' => 'success',
-            'data' => new UserResource($user)
+            'data' => new CustomerResource($customer)
         ]);
     }
 
@@ -76,22 +77,22 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(CustomerUpdateRequest $request, $id)
     {
-        $userData = [];
+        $customerData = [];
 
-        if($request->has('username')){
-            $userData['username'] = $request->username;
+        if($request->has('name')){
+            $customerData['name'] = $request->name;
         }
-        if($request->has('password')){
-            $userData['password'] = bcrypt($request->password);
+        if($request->has('email')){
+            $customerData['email'] = $request->email;
         }
 
-        $user = $this->userRepository->updateUser($id, $userData);
+        $customer = $this->customerRepository->updateCustomer($id, $customerData);
 
         return response()->json([
             'status' => 'success',
-            'data' => new UserResource($user)
+            'data' => new CustomerResource($customer)
         ]);
     }
 
@@ -103,7 +104,8 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $this->userRepository->deleteUser($id);
+        $this->customerRepository->deleteCustomer($id);
         return response()->json([], Response::HTTP_NO_CONTENT);
     }
 }
+

@@ -19,8 +19,11 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->string('car_number');
             $table->integer('duration');
-            $table->text('notes');
+            $table->text('notes')->nullable();
+            $table->boolean('is_taken_back')->default(0);
             $table->timestamps();
+
+            $table->foreign('customer_id')->references('id')->on('customers')->cascadeOnDelete();
         });
     }
 

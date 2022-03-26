@@ -25,8 +25,7 @@ class UserStoreRequest extends FormRequest
     {
         return [
             'username' => 'required|string|max:255|unique:users',
-            'password' => 'required|string|max:255',
-            'isAdmin' => 'sometimes|boolean'
+            'password' => 'required|string|max:255'
         ];
     }
 }

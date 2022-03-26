@@ -9,12 +9,12 @@ class UserRepository implements UserRepositoryInterface
 {
     public function getAllUsers() 
     {
-        return User::simplePaginate(10);
+        return User::where('isAdmin',0)->paginate(10);
     }
 
     public function getUserById($userId) 
     {
-        return User::findOrFail($userId);
+        return User::where('isAdmin', 0)->findOrFail($userId);
     }
 
     public function createUser(array $userData) 
@@ -24,14 +24,14 @@ class UserRepository implements UserRepositoryInterface
 
     public function updateUser($userId, array $userData) 
     {
-        $user = User::findOrFail($userId);
+        $user = $this->getUserById($userId);
         $user->update($userData);
         return $user;
     }
 
     public function deleteUser($userId) 
     {
-        $user = User::findOrFail($userId);
+        $user = $this->getUserById($userId);
         $user->delete();
     }
 }
